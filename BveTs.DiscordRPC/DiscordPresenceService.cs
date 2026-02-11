@@ -9,7 +9,7 @@ namespace BveTs.DiscordRPC;
 /// </summary>
 public class DiscordPresenceService : IDisposable
 {
-	// TODO: Discord Developer Portal でアプリケーションを作成し、実際のアプリケーションIDに置き換えてください
+	// TODO: Create an application in Discord Developer Portal and replace with your actual Application ID
 	private const string APPLICATION_ID = "000000000000000000";
 
 	private readonly DiscordRpcClient client;
