@@ -1,0 +1,50 @@
+name: Build Discord RPC Plugin
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+  workflow_dispatch:
+
+env:
+  DISCORD_RPC_CSPROJ_PATH: ./BveTs.DiscordRPC/BveTs.DiscordRPC.csproj
+  TARGET_FRAMEWORK: net48
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.DISCORD_RPC_CSPROJ_PATH }}
+
+      - name: Build and publish
+        run: >
+          dotnet publish ${{ env.DISCORD_RPC_CSPROJ_PATH }}
+          -f ${{ env.TARGET_FRAMEWORK }}
+          -c Release
+          -o ./out
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: BveTs.DiscordRPC
+          path: ./out/*
+          retention-days: 7
